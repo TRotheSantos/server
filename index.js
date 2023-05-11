@@ -7,6 +7,7 @@ const Users = require("./datainterface.js");
 let User = new Users();
 
 
+
 app.listen(
     PORT,
     () => console.log(`This application runs on http://localhost:${PORT}`)
@@ -40,27 +41,34 @@ app.get("/users", (req, res) => {
 
 // ADDING A USER
 app.post("/users", (req, res) => {
-    const newUser = JSON.parse(req.body);
+    const newUser = req.body;
     User.addUser(newUser);
-    // res.status(201).send("User created successfully");
     res.json(newUser);
   });
 
 
 
+//provides a specified user
+app.get("/user/:id", (req, res) => {
+     const {id} = req.params; //req.query.id davor
+     const parsedData = User.getAllUsers();
+     const index = User.getIndexById(id, parsedData);
+     res.json(parsedData[index]);
+ });
 
 
+ app.delete('/users/:userId', (req, res) => {
+    const userId = req.params.userId;
+    
+    if (userId === -1) {
+        return res.status(404).json({ error: 'User not found' });
+    }
 
-
-
-// provides a specified user
-// app.get("/user/:id", (req, res) => {
-//      const {id} = req.params; //req.query.id davor
-//      const parsedData = User.getAllUsers();
-//      const index = User.getIndexById(id, parsedData);
-//      res.json(parsedData[index]);
-//  });
-
+    User.deleteUser(userId);
+  
+    res.json({ success: true });
+});
+  
 
 //  app.put("/users/:id", (req, res) => {
 //     const { id } = req.params;

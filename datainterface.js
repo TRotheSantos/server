@@ -13,11 +13,12 @@ const fs = require('fs');
 
 const file = "users.json";
 
+
+
 class Users {
     constructor() {}
 
     
-    static count = 9999;
          
     deletedId = [];
      /**
@@ -25,11 +26,12 @@ class Users {
      */
     getNewId() {
         let newID;
-        if (!(this.deletedId === 0)){
+        if (!(this.deletedId.length === 0)){
             newID = this.deletedId.pop();
-        } else {
-            Users.count++;
-            newID = count;
+        } else { 
+            const users = this.getAllUsers();
+            let lastID = parseInt(users[users.length - 1].id);
+            newID = lastID + 1;
         }
         return newID;
     }
@@ -71,58 +73,53 @@ class Users {
         return index;
     }
 
-    /**old version
-     * @returns {Number}
-     */
-    // getNewId() {
-    //     const parsedData = this.getAllUsers();
-    //     return parsedData[length - 1].id + 1;
-    // }
-
-
 
 
     /**
      * @param {User} user (parsed)
      */
     addUser(user) {
-        user.id = getNewId();
+        user.id = this.getNewId();
+        console.log("user id"+user.id);
         user.created_at = new Date().toISOString();
         let users = this.getAllUsers();
         users.push(user);
-        fs.writeFileSync(file, JSON.stringify(users, null, 2));
+        this.writeToFile(users);
     }
 
+
+    // other way to do it
     updateUser(id, updatedUser) {
-        const data = this.getAllUsers();
+        const users = this.getAllUsers();
         const index = this.getIndexById(id, data);
-        data[index] = updatedUser;
-        fs.writeFileSync("users.json", JSON.stringify(data));
+        users[index] = updatedUser;
+        this.writeToFile(users);
     }
 
-
-    // /**
-    //  * @param {Number} id
-    //  * @param {User} newUser
-    //  */
-    // modifyUser(id, newUser) {
-    //     let parsedData = this.getAllUsers();
-    //     let index = this.getIndexById(id, parsedData);
-
-    //     for (let property in parsedData[index]) {
-    //         if (newUser[property] == undefined) continue;
-    //         parsedData[index][property] = newUser[property];
-    //     }
-
-    //     this.writeToFile(parsedData);
-    // }
 
     /**
-     * Not sure if it works, Yafets approach
+     * @param {Number} id
+     * @param {User} newUser
+     */
+    modifyUser(id, newUser) {
+        let parsedData = this.getAllUsers();
+        let index = this.getIndexById(id, parsedData);
+
+        for (let property in parsedData[index]) {
+            if (newUser[property] == undefined) continue;
+            parsedData[index][property] = newUser[property];
+        }
+
+        this.writeToFile(parsedData);
+    }
+
+    /**
+     * 
+     * 
      * @param {Number} id
      */
     deleteUser(id) {
-        this.deletedId.push(id); // added
+        this.deletedId.push(id); // remember id
         let parsedData = this.getAllUsers();
         const index = this.getIndexById(id, parsedData);
 
