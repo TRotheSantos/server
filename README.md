@@ -1,4 +1,4 @@
-# Backend Part of Project @Polytech Marseille (AMU)
+# Backend Part of Project Méthodes de Développement Logiciel (MDL)
 
 ## Available Scripts
 
